@@ -122,7 +122,20 @@ body {
     justify-content: flex-end;
   }
 
-  .add-form-button {
+  .add-form-button-inactive {
+    background-color: #ec3055;
+    margin-top: 24px;
+    font-size: 24px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 18px;
+  }
+
+  .add-form-button-inactive-hover {
+    pointer-events: none;
+  }
+
+  .add-form-button-active {
     margin-top: 24px;
     font-size: 24px;
     padding: 10px 20px;
@@ -132,6 +145,10 @@ body {
     cursor: pointer;
   }
 
-  .add-form-button:hover {
+  .add-form-button-active:hover {
     opacity: 0.9;
   }
+
+  .error {
+		background-color: rgb(255, 164, 164);
+	}
