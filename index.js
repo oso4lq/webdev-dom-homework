@@ -12,14 +12,14 @@ const commentElements = document.querySelectorAll(".comment");
 const comments = [
     {
         userName: 'Глеб Фокин',
-        timeWritten: '12.02.22 12:18',
+        timeWritten: '12.02.2022 12:18',
         userText: 'Это будет первый комментарий на этой странице',
         likesCounter: 3,
         likesActive: false
     },
     {
         userName: 'Варвара Н.',
-        timeWritten: '13.02.22 19:22',
+        timeWritten: '13.02.2022 19:22',
         userText: 'Мне нравится как оформлена эта страница! ❤',
         likesCounter: 75,
         likesActive: true
@@ -38,16 +38,17 @@ const initiateLikeButtonListeners = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
 
     for (const likeButtonElement of likeButtonElements) {
-        likeButtonElement.addEventListener("click", () => {
+        likeButtonElement.addEventListener("click", (event) => {
+            event.stopPropagation();
 
             const index = likeButtonElement.dataset.index;
 
             if (comments[index].likesActive) {
-                //console.log("element unliked");
+                //console.log('element unliked');
                 comments[index].likesCounter--;
                 comments[index].likesActive = false;
             } else {
-                //console.log("element liked");
+                //console.log('element liked');
                 comments[index].likesCounter++;
                 comments[index].likesActive = true;
             }
@@ -58,9 +59,28 @@ const initiateLikeButtonListeners = () => {
 };
 
 
+const initiateReplyListeners = () => {
+    const commentBoxElements = document.querySelectorAll(".comment");
+
+    for (const commentBoxElement of commentBoxElements) {
+        commentBoxElement.addEventListener("click", (event) => {
+            event.stopPropagation();
+
+            const index = commentBoxElement.dataset.index;
+
+            textInputElement.value = `> ${comments[index].userText} 
+            
+${comments[index].userName}, `;
+
+            //console.log('commentBoxElement clicked');
+        });
+    };
+};
+
+
 const renderComments = () => {
     const commentsHtml = comments.map((comment, index) => {
-      return `<li class="comment">
+        return `<li data-index="${index}" class="comment">
             <div class="comment-header">
               <div>${comment.userName}</div>
               <div>${comment.timeWritten}</div>
@@ -73,7 +93,7 @@ const renderComments = () => {
             <div class="comment-footer">
               <div class="likes">
                 <span class="likes-counter">${comment.likesCounter}</span>
-                <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like': ''}"></button>
+                <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like' : ''}"></button>
               </div>
             </div>
           </li>`
@@ -82,6 +102,7 @@ const renderComments = () => {
     listElement.innerHTML = commentsHtml;
 
     initiateLikeButtonListeners();
+    initiateReplyListeners();
 };
 
 renderComments();
@@ -95,9 +116,9 @@ buttonElement.addEventListener("click", () => {
     }
 
     comments.push({
-        userName: nameInputElement.value,
+        userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
         timeWritten: getCurrentDate(),
-        userText: textInputElement.value,
+        userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
         likesCounter: 0,
         likesActive: false
     });
@@ -106,11 +127,11 @@ buttonElement.addEventListener("click", () => {
 
     nameInputElement.value = "";
     textInputElement.value = "";
+    //console.log('comment added');
 });
 
 
 const validationFields = () => {
-    //console.log("object");
     if (nameInputElement.value && textInputElement.value) {
         buttonElement.classList.remove("add-form-button-inactive-hover");
         buttonElement.disabled = false;
