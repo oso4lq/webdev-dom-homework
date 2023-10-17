@@ -57,11 +57,10 @@ const initiateLikeButtonListeners = () => {
     }
 };
 
-//  maybe try to optimise with the output 'string+string' or make a callback?
+
 const renderComments = () => {
     const commentsHtml = comments.map((comment, index) => {
-        if (comments[index].likesActive) {
-            return `<li class="comment">
+      return `<li class="comment">
             <div class="comment-header">
               <div>${comment.userName}</div>
               <div>${comment.timeWritten}</div>
@@ -74,34 +73,14 @@ const renderComments = () => {
             <div class="comment-footer">
               <div class="likes">
                 <span class="likes-counter">${comment.likesCounter}</span>
-                <button data-index="${index}" class="like-button -active-like"></button>
+                <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like': ''}"></button>
               </div>
             </div>
           </li>`
-        } else {
-            return `<li class="comment">
-            <div class="comment-header">
-              <div>${comment.userName}</div>
-              <div>${comment.timeWritten}</div>
-            </div>
-            <div class="comment-body">
-              <div class="comment-text">
-                ${comment.userText}
-              </div>
-            </div>
-            <div class="comment-footer">
-              <div class="likes">
-                <span class="likes-counter">${comment.likesCounter}</span>
-                <button data-index="${index}" class="like-button /*-active-like*/"></button>
-              </div>
-            </div>
-          </li>`
-        }
     }).join("");
 
     listElement.innerHTML = commentsHtml;
 
-    //initiateEventListeners();
     initiateLikeButtonListeners();
 };
 
