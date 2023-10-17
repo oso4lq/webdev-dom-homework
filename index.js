@@ -3,11 +3,7 @@
 const listElement = document.getElementById("comments");
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
-
 const buttonElement = document.getElementById("comment-button");
-const buttonBox = document.getElementById("button-box");
-
-const commentElements = document.querySelectorAll(".comment");
 
 const comments = [
     {
@@ -26,13 +22,35 @@ const comments = [
     },
 ];
 
-
 const getCurrentDate = () => {
-    let date = new Date().toLocaleDateString();
-    let time = new Date().toLocaleTimeString().slice(0, -3);
-    return `${date} ${time}`;
+    const date = new Date().toLocaleString().slice(0, -3);
+    return date;
 };
 
+const renderComments = () => {
+    listElement.innerHTML = comments.map((comment, index) => {
+        //console.log(comment.userText);
+        const quoteText = comment.userText.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
+        return `<li data-index="${index}" class="comment">
+                <div class="comment-header">
+                    <div>${comment.userName}</div>
+                    <div>${comment.timeWritten}</div>
+                </div>
+                <div class="comment-body">
+                    <div class="comment-text">${quoteText}</div>
+                </div>
+                <div class="comment-footer">
+                    <div class="likes">
+                        <span class="likes-counter">${comment.likesCounter}</span>
+                        <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like' : ''}"></button>
+                    </div>
+                </div>
+            </li>`;
+    }).join("");
+
+    initiateLikeButtonListeners();
+    initiateReplyListeners();
+};
 
 const initiateLikeButtonListeners = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
@@ -58,78 +76,16 @@ const initiateLikeButtonListeners = () => {
     }
 };
 
-
 const initiateReplyListeners = () => {
     const commentBoxElements = document.querySelectorAll(".comment");
 
     for (const commentBoxElement of commentBoxElements) {
-        commentBoxElement.addEventListener("click", (event) => {
-            event.stopPropagation();
-
+        commentBoxElement.addEventListener("click", () => {
             const index = commentBoxElement.dataset.index;
-
-            textInputElement.value = `> ${comments[index].userText} 
-            
-${comments[index].userName}, `;
-
+            textInputElement.value = `> ${comments[index].userText} \n ${comments[index].userName}, `;
             //console.log('commentBoxElement clicked');
-        });
-    };
+        })};
 };
-
-
-const renderComments = () => {
-    const commentsHtml = comments.map((comment, index) => {
-        return `<li data-index="${index}" class="comment">
-            <div class="comment-header">
-              <div>${comment.userName}</div>
-              <div>${comment.timeWritten}</div>
-            </div>
-            <div class="comment-body">
-              <div class="comment-text">
-                ${comment.userText}
-              </div>
-            </div>
-            <div class="comment-footer">
-              <div class="likes">
-                <span class="likes-counter">${comment.likesCounter}</span>
-                <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like' : ''}"></button>
-              </div>
-            </div>
-          </li>`
-    }).join("");
-
-    listElement.innerHTML = commentsHtml;
-
-    initiateLikeButtonListeners();
-    initiateReplyListeners();
-};
-
-renderComments();
-
-buttonElement.addEventListener("click", () => {
-    nameInputElement.classList.remove("input-error");
-
-    if (nameInputElement.value === "") {
-        nameInputElement.classList.add("input-error");
-        return;
-    }
-
-    comments.push({
-        userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-        timeWritten: getCurrentDate(),
-        userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-        likesCounter: 0,
-        likesActive: false
-    });
-
-    renderComments();
-
-    nameInputElement.value = "";
-    textInputElement.value = "";
-    //console.log('comment added');
-});
-
 
 const validationFields = () => {
     if (nameInputElement.value && textInputElement.value) {
@@ -160,8 +116,21 @@ nameInputElement.addEventListener("input", validationFields);
 textInputElement.addEventListener("input", validationFields);
 
 buttonElement.addEventListener("click", () => {
-    if (nameInputElement.value === "" || textInputElement.value === "") {
-        return;
+    if (nameInputElement.value !== "" && textInputElement.value !== "") {
+        comments.push({
+            userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+            timeWritten: getCurrentDate(),
+            userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+            likesCounter: 0,
+            likesActive: false
+        });
+
+        renderComments();
+
+        nameInputElement.value = "";
+        textInputElement.value = "";
+        //console.log('comment added');
     }
 });
-//console.log("It works!");
+
+renderComments();
