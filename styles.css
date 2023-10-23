@@ -53,6 +53,8 @@ body {
   .comment-footer {
     display: flex;
     justify-content: flex-end;
+    align-items: flex-end;
+    gap: 8px;
   }
 
   .comment-body {
@@ -62,6 +64,14 @@ body {
 
   .comment-text {
     font-size: 32px;
+    white-space: pre-line;
+  }
+
+  .quote {
+    font-size: 16px;
+    background-color: aliceblue;
+    padding: 8px;
+    color: #202020;
   }
 
   .likes {
@@ -152,3 +162,29 @@ body {
   .error {
 		background-color: rgb(255, 164, 164);
 	}
+
+  .save-btn {
+    margin-top: 24px;
+    margin-left: 24px;
+    font-size: 12px;
+    padding: 8px 8px;
+    background-color: #30ec8b;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+  }
+
+  .edit-btn {
+    margin-top: 24px;
+    font-size: 12px;
+    padding: 8px 8px;
+    background-color: #30baec;
+    border: none;
+    border-radius: 18px;
+    cursor: pointer;
+  }
+
+  .edit-textarea {
+    max-height: 80px;
+    width: 500px;
+  }
