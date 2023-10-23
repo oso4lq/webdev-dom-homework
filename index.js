@@ -34,8 +34,8 @@ const renderComments = () => {
         const quoteText = comment.userText.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
 
         const editButtonHtml = comment.isEdit
-            ? `<button data-index='${index}' type='button' class='save-btn'>Save</button>`
-            : `<button data-index='${index}' type='button' class='edit-btn'>Edit</button>`;
+            ? `<button data-index='${index}' type='button' class='save-btn'>Сохранить</button>`
+            : `<button data-index='${index}' type='button' class='edit-btn'>Редактировать</button>`;
 
         const commentTextHtml = comment.isEdit
             ? `<textarea data-index='${index}' id="textarea-${index}" class="edit-textarea">${comment.userText}</textarea>`
@@ -104,7 +104,8 @@ const initiateEditSaveListeners = () => {
     const buttons = document.querySelectorAll(".edit-btn, .save-btn");
 
     buttons.forEach((button, index) => {
-        button.addEventListener("click", () => {
+        button.addEventListener("click", (event) => {
+            event.stopPropagation();
             if (button.classList.contains("edit-btn")) {
                 comments[index].isEdit = true;
                 //console.log('comment editing');
