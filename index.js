@@ -11,14 +11,16 @@ const comments = [
         timeWritten: '12.02.2022 12:18',
         userText: 'Это будет первый комментарий на этой странице',
         likesCounter: 3,
-        likesActive: false
+        likesActive: false,
+        isEdit: false
     },
     {
         userName: 'Варвара Н.',
         timeWritten: '13.02.2022 19:22',
         userText: 'Мне нравится как оформлена эта страница! ❤',
         likesCounter: 75,
-        likesActive: true
+        likesActive: true,
+        isEdit: false
     },
 ];
 
@@ -29,27 +31,38 @@ const getCurrentDate = () => {
 
 const renderComments = () => {
     listElement.innerHTML = comments.map((comment, index) => {
-        //console.log(comment.userText);
         const quoteText = comment.userText.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
-        return `<li data-index="${index}" class="comment">
+
+        const editButtonHtml = comment.isEdit
+            ? `<button data-index='${index}' type='button' class='save-btn'>Save</button>`
+            : `<button data-index='${index}' type='button' class='edit-btn'>Edit</button>`;
+
+        const commentTextHtml = comment.isEdit
+            ? `<textarea data-index='${index}' id="textarea-${index}" class="edit-textarea">${comment.userText}</textarea>`
+            : `<div class="comment-text">${quoteText}</div>`;
+
+        return `
+            <li data-index="${index}" class="comment">
                 <div class="comment-header">
                     <div>${comment.userName}</div>
                     <div>${comment.timeWritten}</div>
                 </div>
                 <div class="comment-body">
-                    <div class="comment-text">${quoteText}</div>
+                    ${commentTextHtml}
                 </div>
                 <div class="comment-footer">
                     <div class="likes">
                         <span class="likes-counter">${comment.likesCounter}</span>
                         <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like' : ''}"></button>
                     </div>
+                    ${editButtonHtml}
                 </div>
             </li>`;
     }).join("");
 
     initiateLikeButtonListeners();
     initiateReplyListeners();
+    initiateEditSaveListeners();
 };
 
 const initiateLikeButtonListeners = () => {
@@ -85,6 +98,26 @@ const initiateReplyListeners = () => {
             textInputElement.value = `> ${comments[index].userText} \n ${comments[index].userName}, `;
             //console.log('commentBoxElement clicked');
         })};
+};
+
+const initiateEditSaveListeners = () => {
+    const buttons = document.querySelectorAll(".edit-btn, .save-btn");
+
+    buttons.forEach((button, index) => {
+        button.addEventListener("click", () => {
+            if (button.classList.contains("edit-btn")) {
+                comments[index].isEdit = true;
+                //console.log('comment editing');
+            } else if (button.classList.contains("save-btn")) {
+                const index = button.dataset.index;
+                const textarea = document.getElementById(`textarea-${index}`);
+                comments[index].userText = textarea.value;
+                comments[index].isEdit = false;
+                //console.log('comment saved');
+            }
+            renderComments();
+        });
+    });
 };
 
 const validationFields = () => {
