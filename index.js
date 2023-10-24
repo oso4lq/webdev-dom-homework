@@ -5,8 +5,8 @@ const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
 
-const comments = [
-    {
+let comments = [
+    /*{
         userName: 'Глеб Фокин',
         timeWritten: '12.02.2022 12:18',
         userText: 'Это будет первый комментарий на этой странице',
@@ -21,39 +21,70 @@ const comments = [
         likesCounter: 75,
         likesActive: true,
         isEdit: false
-    },
+    },*/
 ];
+
+const getCommentsAPI = () => {
+    fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+    method: "GET",
+}).then((response) => {
+    response.json().then((responseData) => {
+        const processDataAPI = responseData.comments.map((comment) => {
+            return {
+                /*userName: comment.author.name,
+                timeWritten: comment.date,
+                userText: comment.userText,
+                likesCounter: comment.likesCounter,
+                likesActive: comment.likesActive,
+                isEdit: false,*/
+                author: comment.author.name,
+                date: getNetworkDate(comment.date),
+                likes: comment.likes,
+                isLiked: false,
+                text: comment.text,
+            };
+        });
+        comments = processDataAPI;
+        renderComments();
+    });
+});
+};
+getCommentsAPI();
 
 const getCurrentDate = () => {
     const date = new Date().toLocaleString().slice(0, -3);
     return date;
 };
+const getNetworkDate = (networkDate) => {
+    const date = new Date(networkDate).toLocaleString().slice(0, -3);
+    return date;
+}
 
 const renderComments = () => {
     listElement.innerHTML = comments.map((comment, index) => {
-        const quoteText = comment.userText.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
+        const quoteText = comment.text.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
 
         const editButtonHtml = comment.isEdit
             ? `<button data-index='${index}' type='button' class='save-btn'>Сохранить</button>`
             : `<button data-index='${index}' type='button' class='edit-btn'>Редактировать</button>`;
 
         const commentTextHtml = comment.isEdit
-            ? `<textarea data-index='${index}' id="textarea-${index}" class="edit-textarea">${comment.userText}</textarea>`
+            ? `<textarea data-index='${index}' id="textarea-${index}" class="edit-textarea">${comment.text}</textarea>`
             : `<div class="comment-text">${quoteText}</div>`;
 
         return `
             <li data-index="${index}" class="comment">
                 <div class="comment-header">
-                    <div>${comment.userName}</div>
-                    <div>${comment.timeWritten}</div>
+                    <div>${comment.author}</div>
+                    <div>${comment.date}</div>
                 </div>
                 <div class="comment-body">
                     ${commentTextHtml}
                 </div>
                 <div class="comment-footer">
                     <div class="likes">
-                        <span class="likes-counter">${comment.likesCounter}</span>
-                        <button data-index="${index}" class="like-button ${comment.likesActive ? '-active-like' : ''}"></button>
+                        <span class="likes-counter">${comment.likes}</span>
+                        <button data-index="${index}" class="like-button ${comment.isLiked ? '-active-like' : ''}"></button>
                     </div>
                     ${editButtonHtml}
                 </div>
@@ -74,14 +105,14 @@ const initiateLikeButtonListeners = () => {
 
             const index = likeButtonElement.dataset.index;
 
-            if (comments[index].likesActive) {
+            if (comments[index].isLiked) {
                 //console.log('element unliked');
-                comments[index].likesCounter--;
-                comments[index].likesActive = false;
+                comments[index].likes--;
+                comments[index].isLiked = false;
             } else {
                 //console.log('element liked');
-                comments[index].likesCounter++;
-                comments[index].likesActive = true;
+                comments[index].likes++;
+                comments[index].isLiked = true;
             }
 
             renderComments();
@@ -95,9 +126,10 @@ const initiateReplyListeners = () => {
     for (const commentBoxElement of commentBoxElements) {
         commentBoxElement.addEventListener("click", () => {
             const index = commentBoxElement.dataset.index;
-            textInputElement.value = `> ${comments[index].userText} \n ${comments[index].userName}, `;
+            textInputElement.value = `> ${comments[index].text} \n ${comments[index].author}, `;
             //console.log('commentBoxElement clicked');
-        })};
+        })
+    };
 };
 
 const initiateEditSaveListeners = () => {
@@ -112,7 +144,7 @@ const initiateEditSaveListeners = () => {
             } else if (button.classList.contains("save-btn")) {
                 const index = button.dataset.index;
                 const textarea = document.getElementById(`textarea-${index}`);
-                comments[index].userText = textarea.value;
+                comments[index].text = textarea.value;
                 comments[index].isEdit = false;
                 //console.log('comment saved');
             }
@@ -151,20 +183,29 @@ textInputElement.addEventListener("input", validationFields);
 
 buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
-        comments.push({
+        /*comments.push({
             userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
             timeWritten: getCurrentDate(),
             userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
             likesCounter: 0,
             likesActive: false
-        });
+        });*/
 
-        renderComments();
+        fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+            method: "POST",
+            body: JSON.stringify({
+                name: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+                text: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
+            }),
+        }).then((response) => {
+            response.json().then(() => {
 
-        nameInputElement.value = "";
-        textInputElement.value = "";
-        //console.log('comment added');
+                getCommentsAPI();
+
+                nameInputElement.value = "";
+                textInputElement.value = "";
+                //console.log('comment added');
+            });
+        })
     }
-});
-
-renderComments();
+})
