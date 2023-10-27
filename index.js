@@ -5,8 +5,7 @@ const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
 
-let comments = [
-];
+let comments = [];
 
 const getCommentsAPI = () => {
     return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
@@ -26,7 +25,21 @@ const getCommentsAPI = () => {
             renderComments();
         });
 };
-getCommentsAPI();
+//getCommentsAPI();
+
+const loadingText = () => {
+    document.getElementById("comments").style.display = 'none';
+    document.getElementById("comment-wait").style.display = 'block';
+    //console.log('loading comments');
+    getCommentsAPI()
+    .then(() => {
+        //console.log('comments loaded');
+        document.getElementById("comments").style.display = 'flex';
+        document.getElementById("comment-wait").style.display = 'none';
+    });
+    
+};
+loadingText();
 
 const getCurrentDate = () => {
     const date = new Date().toLocaleString().slice(0, -3);
