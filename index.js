@@ -4,6 +4,8 @@ const listElement = document.getElementById("comments");
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
+const commentWaitElement = document.getElementById("comment-wait");
+const errorShortInputElement = document.getElementById("error-short-input");
 
 let comments = [];
 
@@ -167,6 +169,23 @@ const validationFields = () => {
     buttonElement.disabled = true;
 };
 
+const postResponceAnalysis = (response) => {
+    if (nameInputElement.value.length < 3 || textInputElement.value.length < 3) {
+        errorShortInputElement.style.display = 'flex';
+        setTimeout(() => {
+            errorShortInputElement.style.display = 'none';
+        }, 5000);
+        throw new Error("field inputs must be at least 3 characters long");
+    };
+    if (response.status === 201) {
+        return response.json();
+    } else {
+        throw new Error("server is down");
+    };
+};
+
+const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
 nameInputElement.addEventListener("input", validationFields);
 textInputElement.addEventListener("input", validationFields);
 
@@ -176,41 +195,35 @@ buttonElement.addEventListener("click", () => {
         buttonElement.disabled = true;
         buttonElement.textContent = 'Добавление...'
 
-        fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
-            method: "POST",
-            body: JSON.stringify({
-                name: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-                text: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            }),
-        })
-            .then((response) => {
-                //console.log(response);
-                if (nameInputElement.value.length < 3 || textInputElement.value.length < 3) {
-                    document.getElementById("error-short-input").style.display = 'flex';
-                    setTimeout(() => {
-                        document.getElementById("error-short-input").style.display = 'none';
-                    }, 5000);
-                    throw new Error("field inputs must be at least 3 characters long");
-                };
-                if (response.status === 201) {
-                    return response.json();
-                } else {
-                    throw new Error("server is down");
-                };
+        const retryPostComment = () => {
+            fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: sanitizeInput(nameInputElement.value),
+                    text: sanitizeInput(textInputElement.value),
+                    forceError: true,
+                }),
             })
-            .then(() => getCommentsAPI())
-            .then(() => {
-                buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать';
-                nameInputElement.value = "";
-                textInputElement.value = "";
-            })
-            .catch((error) => {
-                buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать';
-                console.warn(error);
-                return error;
-            })
+                .then(postResponceAnalysis)
+                .then(() => getCommentsAPI())
+                .then(() => {
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = 'Написать';
+                    nameInputElement.value = "";
+                    textInputElement.value = "";
+                })
+                .catch((error) => {
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = 'Написать';
+                    console.warn(error);
+                    if (error instanceof Error && error.message === "server is down") {
+                        // If the server is down, retry the POST request after a delay
+                        setTimeout(retryPostComment, 5000); // Retry after 5 seconds
+                    }
+                    return error;
+                });
+        };
+        retryPostComment();
 
         //console.log('comment added');
     }
