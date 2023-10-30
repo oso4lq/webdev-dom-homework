@@ -32,12 +32,11 @@ const loadingText = () => {
     document.getElementById("comment-wait").style.display = 'block';
     //console.log('loading comments');
     getCommentsAPI()
-    .then(() => {
-        //console.log('comments loaded');
-        document.getElementById("comments").style.display = 'flex';
-        document.getElementById("comment-wait").style.display = 'none';
-    });
-    
+        .then(() => {
+            //console.log('comments loaded');
+            document.getElementById("comments").style.display = 'flex';
+            document.getElementById("comment-wait").style.display = 'none';
+        });
 };
 loadingText();
 
@@ -173,13 +172,6 @@ textInputElement.addEventListener("input", validationFields);
 
 buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
-        /*comments.push({
-            userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            timeWritten: getCurrentDate(),
-            userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            likesCounter: 0,
-            likesActive: false
-        });*/
 
         buttonElement.disabled = true;
         buttonElement.textContent = 'Добавление...'
@@ -191,15 +183,35 @@ buttonElement.addEventListener("click", () => {
                 text: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
             }),
         })
-            .then((response) => response.json())
+            .then((response) => {
+                //console.log(response);
+                if (nameInputElement.value.length < 3 || textInputElement.value.length < 3) {
+                    document.getElementById("error-short-input").style.display = 'flex';
+                    setTimeout(() => {
+                        document.getElementById("error-short-input").style.display = 'none';
+                    }, 5000);
+                    throw new Error("field inputs must be at least 3 characters long");
+                };
+                if (response.status === 201) {
+                    return response.json();
+                } else {
+                    throw new Error("server is down");
+                };
+            })
             .then(() => getCommentsAPI())
             .then(() => {
                 buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать'
-            });
+                buttonElement.textContent = 'Написать';
+                nameInputElement.value = "";
+                textInputElement.value = "";
+            })
+            .catch((error) => {
+                buttonElement.disabled = false;
+                buttonElement.textContent = 'Написать';
+                console.warn(error);
+                return error;
+            })
 
-        nameInputElement.value = "";
-        textInputElement.value = "";
         //console.log('comment added');
     }
 });
