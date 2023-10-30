@@ -5,51 +5,41 @@ const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
 
-let comments = [
-    /*{
-        userName: 'Глеб Фокин',
-        timeWritten: '12.02.2022 12:18',
-        userText: 'Это будет первый комментарий на этой странице',
-        likesCounter: 3,
-        likesActive: false,
-        isEdit: false
-    },
-    {
-        userName: 'Варвара Н.',
-        timeWritten: '13.02.2022 19:22',
-        userText: 'Мне нравится как оформлена эта страница! ❤',
-        likesCounter: 75,
-        likesActive: true,
-        isEdit: false
-    },*/
-];
+let comments = [];
 
 const getCommentsAPI = () => {
-    fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
-    method: "GET",
-}).then((response) => {
-    response.json().then((responseData) => {
-        const processDataAPI = responseData.comments.map((comment) => {
-            return {
-                /*userName: comment.author.name,
-                timeWritten: comment.date,
-                userText: comment.userText,
-                likesCounter: comment.likesCounter,
-                likesActive: comment.likesActive,
-                isEdit: false,*/
-                author: comment.author.name,
-                date: getNetworkDate(comment.date),
-                likes: comment.likes,
-                isLiked: false,
-                text: comment.text,
-            };
+    return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+        method: "GET",
+    })
+        .then((response) => response.json())
+        .then((responseData) => {
+            comments = responseData.comments.map((comment) => {
+                return {
+                    author: comment.author.name,
+                    date: getNetworkDate(comment.date),
+                    likes: comment.likes,
+                    isLiked: false,
+                    text: comment.text,
+                };
+            });
+            renderComments();
         });
-        comments = processDataAPI;
-        renderComments();
-    });
-});
 };
-getCommentsAPI();
+//getCommentsAPI();
+
+const loadingText = () => {
+    document.getElementById("comments").style.display = 'none';
+    document.getElementById("comment-wait").style.display = 'block';
+    //console.log('loading comments');
+    getCommentsAPI()
+    .then(() => {
+        //console.log('comments loaded');
+        document.getElementById("comments").style.display = 'flex';
+        document.getElementById("comment-wait").style.display = 'none';
+    });
+    
+};
+loadingText();
 
 const getCurrentDate = () => {
     const date = new Date().toLocaleString().slice(0, -3);
@@ -191,21 +181,25 @@ buttonElement.addEventListener("click", () => {
             likesActive: false
         });*/
 
+        buttonElement.disabled = true;
+        buttonElement.textContent = 'Добавление...'
+
         fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
             method: "POST",
             body: JSON.stringify({
                 name: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
                 text: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
             }),
-        }).then((response) => {
-            response.json().then(() => {
-
-                getCommentsAPI();
-
-                nameInputElement.value = "";
-                textInputElement.value = "";
-                //console.log('comment added');
-            });
         })
+            .then((response) => response.json())
+            .then(() => getCommentsAPI())
+            .then(() => {
+                buttonElement.disabled = false;
+                buttonElement.textContent = 'Написать'
+            });
+
+        nameInputElement.value = "";
+        textInputElement.value = "";
+        //console.log('comment added');
     }
-})
+});
