@@ -189,9 +189,7 @@ body {
     width: 500px;
   }
 
-  .error-short-input {
-    transition: all 0.3s;
-    
+  .error-box {   
     display: none;
     flex-wrap: wrap;
     align-content: center;

@@ -6,6 +6,8 @@ const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
 const commentWaitElement = document.getElementById("comment-wait");
 const errorShortInputElement = document.getElementById("error-short-input");
+const errorNoNetworkElement = document.getElementById("error-no-network");
+const errorServerDownElement = document.getElementById("error-server-down");
 
 let comments = [];
 
@@ -175,12 +177,12 @@ const postResponceAnalysis = (response) => {
         setTimeout(() => {
             errorShortInputElement.style.display = 'none';
         }, 5000);
-        throw new Error("field inputs must be at least 3 characters long");
+        throw new Error("Field inputs must be at least 3 characters long");
     };
     if (response.status === 201) {
         return response.json();
     } else {
-        throw new Error("server is down");
+        throw new Error("Server is down");
     };
 };
 
@@ -193,7 +195,7 @@ buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
 
         buttonElement.disabled = true;
-        buttonElement.textContent = 'Добавление...'
+        buttonElement.textContent = 'Добавление...';
 
         const retryPostComment = () => {
             fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
@@ -216,9 +218,23 @@ buttonElement.addEventListener("click", () => {
                     buttonElement.disabled = false;
                     buttonElement.textContent = 'Написать';
                     console.warn(error);
-                    if (error instanceof Error && error.message === "server is down") {
-                        // If the server is down, retry the POST request after a delay
-                        setTimeout(retryPostComment, 5000); // Retry after 5 seconds
+                    if (error instanceof Error && error.message === "Failed to fetch") {
+                        errorNoNetworkElement.style.display = 'flex';
+                        buttonElement.disabled = true;
+                        buttonElement.textContent = 'Добавление...'
+                        setTimeout(() => {
+                            retryPostComment();
+                            errorNoNetworkElement.style.display = 'none';
+                        }, 5000);
+                    }
+                    if (error instanceof Error && error.message === "Server is down") {
+                        errorServerDownElement.style.display = 'flex';
+                        buttonElement.disabled = true;
+                        buttonElement.textContent = 'Добавление...'
+                        setTimeout(() => {
+                            retryPostComment();
+                            errorServerDownElement.style.display = 'none';
+                        }, 5000);
                     }
                     return error;
                 });
