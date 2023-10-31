@@ -215,7 +215,8 @@ buttonElement.addEventListener("click", () => {
                     throw new Error("Server is down");
                 };
             };
-            function postErrorAnalysis(error) {
+            
+            function postErrorAnalysis (error) {
                 buttonElement.disabled = false;
                 buttonElement.textContent = 'Написать';
                 console.warn(error);
