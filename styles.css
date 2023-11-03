@@ -188,3 +188,19 @@ body {
     max-height: 80px;
     width: 500px;
   }
+
+  .error-box {   
+    display: none;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    background-color: #ebf43b;
+    color:rgba(0, 0, 0);
+
+    margin-top: 24px;
+    margin-right: 64px;
+    font-size: 12px;
+    padding: 8px 8px;
+    border: none;
+    border-radius: 18px;
+  }

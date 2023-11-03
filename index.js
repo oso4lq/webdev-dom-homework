@@ -4,6 +4,10 @@ const listElement = document.getElementById("comments");
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
+const commentWaitElement = document.getElementById("comment-wait");
+const errorShortInputElement = document.getElementById("error-short-input");
+const errorNoNetworkElement = document.getElementById("error-no-network");
+const errorServerDownElement = document.getElementById("error-server-down");
 
 let comments = [];
 
@@ -32,12 +36,11 @@ const loadingText = () => {
     document.getElementById("comment-wait").style.display = 'block';
     //console.log('loading comments');
     getCommentsAPI()
-    .then(() => {
-        //console.log('comments loaded');
-        document.getElementById("comments").style.display = 'flex';
-        document.getElementById("comment-wait").style.display = 'none';
-    });
-    
+        .then(() => {
+            //console.log('comments loaded');
+            document.getElementById("comments").style.display = 'flex';
+            document.getElementById("comment-wait").style.display = 'none';
+        });
 };
 loadingText();
 
@@ -168,38 +171,90 @@ const validationFields = () => {
     buttonElement.disabled = true;
 };
 
+const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+
 nameInputElement.addEventListener("input", validationFields);
 textInputElement.addEventListener("input", validationFields);
 
 buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
-        /*comments.push({
-            userName: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            timeWritten: getCurrentDate(),
-            userText: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            likesCounter: 0,
-            likesActive: false
-        });*/
 
         buttonElement.disabled = true;
-        buttonElement.textContent = 'Добавление...'
+        buttonElement.textContent = 'Добавление...';
 
-        fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
-            method: "POST",
-            body: JSON.stringify({
-                name: nameInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-                text: textInputElement.value.replaceAll('<', '&lt;').replaceAll('>', '&gt;'),
-            }),
-        })
-            .then((response) => response.json())
-            .then(() => getCommentsAPI())
-            .then(() => {
+        const retryPostComment = () => {
+            fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+                method: "POST",
+                body: JSON.stringify({
+                    name: sanitizeInput(nameInputElement.value),
+                    text: sanitizeInput(textInputElement.value),
+                    forceError: true,
+                }),
+            })
+                .then(postResponceAnalysis)
+                .then(() => getCommentsAPI())
+                .then(() => {
+                    buttonElement.disabled = false;
+                    buttonElement.textContent = 'Написать';
+                    nameInputElement.value = "";
+                    textInputElement.value = "";
+                })
+                .catch(postErrorAnalysis);
+
+            function postResponceAnalysis (response) {
+                if (nameInputElement.value.length < 3 || textInputElement.value.length < 3) {
+                    errorShortInputElement.style.display = 'flex';
+                    setTimeout(() => {
+                        errorShortInputElement.style.display = 'none';
+                    }, 5000);
+                    throw new Error("Field inputs must be at least 3 characters long");
+                };
+                if (response.status === 201) {
+                    return response.json();
+                } else {
+                    throw new Error("Server is down");
+                };
+            };
+            
+            function postErrorAnalysis (error) {
                 buttonElement.disabled = false;
-                buttonElement.textContent = 'Написать'
-            });
+                buttonElement.textContent = 'Написать';
+                console.warn(error);
 
-        nameInputElement.value = "";
-        textInputElement.value = "";
+                if (error instanceof Error) {
+                    switch (error.message) {
+                        case "Failed to fetch":
+                            errorNoNetworkElement.style.display = 'flex';
+                            break;
+                        case "Server is down":
+                            errorServerDownElement.style.display = 'flex';
+                            break;
+                        default:
+                            break;
+                    }
+
+                    buttonElement.disabled = true;
+                    buttonElement.textContent = 'Добавление...';
+
+                    setTimeout(() => {
+                        retryPostComment();
+                        switch (error.message) {
+                            case "Failed to fetch":
+                                errorNoNetworkElement.style.display = 'none';
+                                break;
+                            case "Server is down":
+                                errorServerDownElement.style.display = 'none';
+                                break;
+                            default:
+                                break;
+                        }
+                    }, 5000);
+                }
+                return error;
+            };
+        };
+        retryPostComment();
+
         //console.log('comment added');
     }
 });
