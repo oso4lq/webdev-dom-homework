@@ -1,5 +1,8 @@
 "use strict";
 
+import { getNetworkDate } from './getDate.js';
+import { getCommentsAPICore } from './api.js';
+
 const listElement = document.getElementById("comments");
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
@@ -10,48 +13,6 @@ const errorNoNetworkElement = document.getElementById("error-no-network");
 const errorServerDownElement = document.getElementById("error-server-down");
 
 let comments = [];
-
-const getCommentsAPI = () => {
-    return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
-        method: "GET",
-    })
-        .then((response) => response.json())
-        .then((responseData) => {
-            comments = responseData.comments.map((comment) => {
-                return {
-                    author: comment.author.name,
-                    date: getNetworkDate(comment.date),
-                    likes: comment.likes,
-                    isLiked: false,
-                    text: comment.text,
-                };
-            });
-            renderComments();
-        });
-};
-//getCommentsAPI();
-
-const loadingText = () => {
-    document.getElementById("comments").style.display = 'none';
-    document.getElementById("comment-wait").style.display = 'block';
-    //console.log('loading comments');
-    getCommentsAPI()
-        .then(() => {
-            //console.log('comments loaded');
-            document.getElementById("comments").style.display = 'flex';
-            document.getElementById("comment-wait").style.display = 'none';
-        });
-};
-loadingText();
-
-const getCurrentDate = () => {
-    const date = new Date().toLocaleString().slice(0, -3);
-    return date;
-};
-const getNetworkDate = (networkDate) => {
-    const date = new Date(networkDate).toLocaleString().slice(0, -3);
-    return date;
-}
 
 const renderComments = () => {
     listElement.innerHTML = comments.map((comment, index) => {
@@ -146,6 +107,43 @@ const initiateEditSaveListeners = () => {
     });
 };
 
+/*const getCommentsAPI = () => {
+    return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+        method: "GET",
+    })
+        .then((response) => response.json())*/
+const getCommentsAPI = () => {
+    return getCommentsAPICore().then((responseData) => {
+        comments = responseData.comments.map((comment) => {
+            return {
+                author: comment.author.name,
+                date: getNetworkDate(comment.date),
+                likes: comment.likes,
+                isLiked: false,
+                text: comment.text,
+            };
+        });
+        renderComments();
+    });
+}
+
+const loadingText = () => {
+    document.getElementById("comments").style.display = 'none';
+    document.getElementById("comment-wait").style.display = 'block';
+    //console.log('loading comments');
+    getCommentsAPI()
+        .then(() => {
+            //console.log('comments loaded');
+            document.getElementById("comments").style.display = 'flex';
+            document.getElementById("comment-wait").style.display = 'none';
+        });
+};
+loadingText();
+
+
+
+
+
 const validationFields = () => {
     if (nameInputElement.value && textInputElement.value) {
         buttonElement.classList.remove("add-form-button-inactive-hover");
@@ -201,7 +199,7 @@ buttonElement.addEventListener("click", () => {
                 })
                 .catch(postErrorAnalysis);
 
-            function postResponceAnalysis (response) {
+            function postResponceAnalysis(response) {
                 if (nameInputElement.value.length < 3 || textInputElement.value.length < 3) {
                     errorShortInputElement.style.display = 'flex';
                     setTimeout(() => {
@@ -215,8 +213,8 @@ buttonElement.addEventListener("click", () => {
                     throw new Error("Server is down");
                 };
             };
-            
-            function postErrorAnalysis (error) {
+
+            function postErrorAnalysis(error) {
                 buttonElement.disabled = false;
                 buttonElement.textContent = 'Написать';
                 console.warn(error);
