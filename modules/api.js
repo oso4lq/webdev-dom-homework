@@ -10,22 +10,54 @@ const errorShortInputElement = document.getElementById("error-short-input");
 const errorNoNetworkElement = document.getElementById("error-no-network");
 const errorServerDownElement = document.getElementById("error-server-down");
 
+export let token = "cccsb8cwco6gasawbocod4asc0bg6g78d0cwbkcccobodkb8b43k8scsb8cwco";
+export const setToken = () => {
+    token = newToken;
+}
+
+const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
+const userURL = "https://wedev-api.sky.pro/api/user/login"
+
 const getCommentsAPICore = () => {
-    return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+    return fetch(commentsURL, {
         method: "GET",
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
-        .then((response) => response.json())
+        .then((response) => {
+            if (response.status === 401) {
+                throw new Error("No authorization");
+            }
+            return response.json()
+        });
 }
 const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
+const login = (login, password) => {
+    fetch(userURL, {
+        method: "POST",
+        body: JSON.stringify({
+            login,
+            password,
+        }),
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    })
+}
+
 const retryPostComment = () => {
-    fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
+    fetch(commentsURL, {
         method: "POST",
         body: JSON.stringify({
             name: sanitizeInput(nameInputElement.value),
             text: sanitizeInput(textInputElement.value),
             forceError: true,
         }),
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
     })
         .then(postResponceAnalysis)
         .then(() => getCommentsAPI())
@@ -97,4 +129,4 @@ const retryPostComment = () => {
     };
 };
 
-export { getCommentsAPICore, retryPostComment }
+export { getCommentsAPICore, retryPostComment, login }
