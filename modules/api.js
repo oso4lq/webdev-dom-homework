@@ -95,11 +95,17 @@ export const getComments = () => {
 
 const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
+// post a comment fetch and logic
 const retryPostComment = () => {
+    
+    const nameInputElement = document.getElementById("comment-name-input");
+    const textInputElement = document.getElementById("comment-text-input");
+
     fetch(commentsURL, {
         method: "POST",
         body: JSON.stringify({
             name: sanitizeInput(nameInputElement.value),
+            //name: nameInputElement.value,
             text: sanitizeInput(textInputElement.value),
             forceError: true,
         }),
@@ -179,6 +185,7 @@ const retryPostComment = () => {
 
 // add to array and render function
 const renderComments = () => {
+
     const appElement = document.querySelector("#app");
     const сommentsArrayHTML = commentsArray
         .map((comment, index) => {
@@ -248,22 +255,22 @@ const renderComments = () => {
     appElement.innerHTML = appHTML;
 
 
-    initiateLikeButtonListeners();
-    initiateReplyListeners();
-    initiateEditSaveListeners();
+    //initiateLikeButtonListeners();
+    //initiateReplyListeners();
+    //initiateEditSaveListeners();
 
-    inputByEnter();
+    //inputByEnter();
 
     //validationButton();
 
-    const nameInputElement = document.getElementById("comment-name-input");
-    const textInputElement = document.getElementById("comment-text-input");
-    //const inputName = document.getElementById("comment-name-input");
-    //const inputComments = document.getElementById("comment-text-input");
-    const button = document.getElementById("comment-button");
+    const buttonElement = document.getElementById("comment-button");
 
-    button.addEventListener("click", () => {
-        console.log(1);
+    buttonElement.addEventListener("click", () => {
+
+        const nameInputElement = document.getElementById("comment-name-input");
+        const textInputElement = document.getElementById("comment-text-input");
+
+        console.log('click');
         nameInputElement.classList.remove("error");
         if (nameInputElement.value === "") {
             nameInputElement.classList.add("error");
