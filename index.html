@@ -9,7 +9,6 @@
 
 <body>
   <div class="container">
-    <div class="comment-wait" id="comment-wait">Комментарии загружаются. Пожалуйста, подождите.</div>
     <!--
       <ul id="comments" class="comments">
     </ul>
@@ -30,15 +29,16 @@
     </div>
     <a href="login.html" id="link-to-login">Войти / Зарегистрироваться</a>
   -->
-    <div id="app"></div>
+    <div id="app">
+        <div class="comment-wait" id="comment-wait">
+        Комментарии загружаются. Пожалуйста, подождите.</div>
+        <div class="comment-upload" id="comment-upload" style="display: none; color: rgb(255, 255, 255)">
+        Комментарий добавляется</div>
+        <div class="error-box" id="error-box" style="display: none;"></div>
+    </div>
   </div>
 </body>
 
 <script type="module" src="modules/main.js"></script>
 
 </html>
-
-
-
-<!--
-  -->
