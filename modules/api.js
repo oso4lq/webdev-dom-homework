@@ -11,9 +11,9 @@ const buttonElement = document.getElementById("comment-button");
 const commentWaitElement = document.getElementById("comment-wait");
 const commentUploadElement = document.getElementById("comment-upload");
 
-const errorShortInputElement = document.getElementById("error-short-input");
-const errorNoNetworkElement = document.getElementById("error-no-network");
-const errorServerDownElement = document.getElementById("error-server-down");
+const errorBoxElement = document.getElementById("error-box");
+//const errorBoxElement = document.getElementById("error-no-network");
+//const errorBoxElement = document.getElementById("error-server-down");
 
 const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
 const userURL = "https://wedev-api.sky.pro/api/user/login";
@@ -127,9 +127,10 @@ const retryPostComment = () => {
     function postResponceAnalysis(response) {
         switch (true) {
             case nameInputElement.value.length < 3 || textInputElement.value.length < 3:
-                errorShortInputElement.style.display = 'flex';
+                errorBoxElement.style.display = 'flex';
+                errorBoxElement.innerHTML = 'Поля ввода должны содержать минимум 3 символа.';
                 setTimeout(() => {
-                    errorShortInputElement.style.display = 'none';
+                    errorBoxElement.style.display = 'none';
                 }, 5000);
                 throw new Error("Field inputs must be at least 3 characters long");
 
@@ -149,10 +150,12 @@ const retryPostComment = () => {
         if (error instanceof Error) {
             switch (error.message) {
                 case "Failed to fetch":
-                    errorNoNetworkElement.style.display = 'flex';
+                    errorBoxElement.style.display = 'flex';
+                    errorBoxElement.innerHTML = 'Соединение с Интернетом потеряно.<br>Повторная попытка через 5 секунд.';
                     break;
                 case "Server is down":
-                    errorServerDownElement.style.display = 'flex';
+                    errorBoxElement.style.display = 'flex';
+                    errorBoxElement.innerHTML = 'Соединение с сервером потеряно.<br>Повторная попытка через 5 секунд.';
                     break;
                 default:
                     break;
@@ -166,10 +169,10 @@ const retryPostComment = () => {
                     retryPostComment();
                     switch (error.message) {
                         case "Failed to fetch":
-                            errorNoNetworkElement.style.display = 'none';
+                            errorBoxElement.style.display = 'none';
                             break;
                         case "Server is down":
-                            errorServerDownElement.style.display = 'none';
+                            errorBoxElement.style.display = 'none';
                             break;
                         default:
                             break;
@@ -260,7 +263,7 @@ export const renderComments = () => {
     initiateReplyListeners();
     initiateEditSaveListeners();
 
-    //inputByEnter();
+    inputByEnter();
 
     validationButton();
 
@@ -286,7 +289,9 @@ export const renderComments = () => {
 
     });
 
-    inputComments.addEventListener("input", validationButton);
+    const textInputElement = document.getElementById("comment-text-input");
+
+    textInputElement.addEventListener("input", validationButton);
 
 };
 

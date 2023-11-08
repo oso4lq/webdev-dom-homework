@@ -31,11 +31,14 @@ const initiateLikeButtonListeners = () => {
     }
 };
 
-const initiateReplyListeners = (commentsArray) => {
+const initiateReplyListeners = () => {
     const commentBoxElements = document.querySelectorAll(".comment");
 
     for (const commentBoxElement of commentBoxElements) {
+        const textInputElement = document.getElementById("comment-text-input");
+
         commentBoxElement.addEventListener("click", () => {
+
             const index = commentBoxElement.dataset.index;
             textInputElement.value = `> ${commentsArray[index].text} \n ${commentsArray[index].author}, `;
             //console.log('commentBoxElement clicked');
@@ -65,7 +68,9 @@ const initiateEditSaveListeners = () => {
 };
 
 const validationButton = () => {
-
+    const nameInputElement = document.getElementById("comment-name-input");
+    const textInputElement = document.getElementById("comment-text-input");
+    const buttonElement = document.getElementById("comment-button");
     if (nameInputElement.value && textInputElement.value) {
         buttonElement.classList.remove("add-form-button-inactive-hover");
         buttonElement.disabled = false;
