@@ -103,9 +103,9 @@ const renderComments = (commentsArray) => {
 
     appElement.innerHTML = appHTML;
 
-    initiateLikeButtonListeners(commentsArray);
-    initiateReplyListeners(commentsArray);
-    initiateEditSaveListeners(commentsArray);
+    //initiateLikeButtonListeners(commentsArray);
+    //initiateReplyListeners(commentsArray);
+    //initiateEditSaveListeners(commentsArray);
 
     document.getElementById('link').addEventListener('click', () => {
         renderLogin()

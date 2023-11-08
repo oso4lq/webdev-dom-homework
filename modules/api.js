@@ -18,7 +18,7 @@ const errorServerDownElement = document.getElementById("error-server-down");
 const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
 const userURL = "https://wedev-api.sky.pro/api/user/login";
 
-let commentsArray = [];
+export let commentsArray = [];
 
 export let token;
 console.log(token);
@@ -185,7 +185,7 @@ const retryPostComment = () => {
 };
 
 // add to array and render function
-const renderComments = () => {
+export const renderComments = () => {
 
     const appElement = document.querySelector("#app");
     const сommentsArrayHTML = commentsArray
@@ -256,13 +256,13 @@ const renderComments = () => {
     appElement.innerHTML = appHTML;
 
 
-    //initiateLikeButtonListeners();
-    //initiateReplyListeners();
-    //initiateEditSaveListeners();
+    initiateLikeButtonListeners();
+    initiateReplyListeners();
+    initiateEditSaveListeners();
 
     //inputByEnter();
 
-    //validationButton();
+    validationButton();
 
     const buttonElement = document.getElementById("comment-button");
 
@@ -286,7 +286,7 @@ const renderComments = () => {
 
     });
 
-    //inputComments.addEventListener("input", validationButton);
+    inputComments.addEventListener("input", validationButton);
 
 };
 

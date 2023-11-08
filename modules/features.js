@@ -1,9 +1,11 @@
 //  Features, application functionality
 
+import { commentsArray, renderComments } from "./api.js";
+
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 
-const initiateLikeButtonListeners = (commentsArray) => {
+const initiateLikeButtonListeners = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
 
     for (const likeButtonElement of likeButtonElements) {
@@ -22,7 +24,9 @@ const initiateLikeButtonListeners = (commentsArray) => {
                 commentsArray[index].isLiked = true;
             }
 
-            renderComments(commentsArray);
+            //renderComments(commentsArray);
+            renderComments();
+
         });
     }
 };
@@ -39,7 +43,7 @@ const initiateReplyListeners = (commentsArray) => {
     };
 };
 
-const initiateEditSaveListeners = (commentsArray) => {
+const initiateEditSaveListeners = () => {
     const buttons = document.querySelectorAll(".edit-btn, .save-btn");
 
     buttons.forEach((button, index) => {
@@ -55,7 +59,7 @@ const initiateEditSaveListeners = (commentsArray) => {
                 commentsArray[index].isEdit = false;
                 //console.log('comment saved');
             }
-            renderComments(commentsArray);
+            renderComments();
         });
     });
 };
