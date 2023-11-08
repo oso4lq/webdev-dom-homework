@@ -1,8 +1,12 @@
 const listElement = document.getElementById("comments");
 const textInputElement = document.getElementById("comment-text-input");
+const appElement = document.getElementById("app");
 
 export const renderComments = (comments) => {
-    listElement.innerHTML = comments.map((comment, index) => {
+    //before
+    //listElement.innerHTML 
+    //after
+    const commentsHTML = comments.map((comment, index) => {
         const quoteText = comment.text.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
 
         const editButtonHtml = comment.isEdit
@@ -32,10 +36,39 @@ export const renderComments = (comments) => {
             </li>`;
     }).join("");
 
+    const appHTML = `
+    <div class="container">
+<div class="comment-wait" id="comment-wait">Комментарии загружаются. Пожалуйста, подождите.</div>
+<ul id="comments" class="comments">${commentsHTML}
+  <!--Comments are stored in index.js-->
+</ul>
+<div class="add-form">
+  <input type="text" class="add-form-name" id="comment-name-input" placeholder="Введите ваше имя" />
+  <textarea type="textarea" class="add-form-text" id="comment-text-input" placeholder="Введите ваш коментарий"
+    rows="4"></textarea>
+  <div id="button-box" class="add-form-row">
+    <!--error divs-->
+    <div class="error-box" id="error-short-input">Поля ввода должны содержать минимум 3 символа.</div>
+    <div class="error-box" id="error-no-network">Соединение с Интернетом потеряно.<br>Повторная попытка через 5
+      секунд.</div>
+    <div class="error-box" id="error-server-down">Соединение с сервером потеряно.<br>Повторная попытка через 5
+      секунд.</div>
+    <button class="add-form-button-active" id="comment-button">Написать</button>
+  </div>
+</div>
+<a href="login.html" id="link-to-login">Войти / Зарегистрироваться</a>
+<div id="app"></div>
+</div>
+`;
+
+appElement.innerHTML = appHTML;
+
     initiateLikeButtonListeners(comments);
     initiateReplyListeners(comments);
     initiateEditSaveListeners(comments);
 };
+
+
 
 const initiateLikeButtonListeners = (comments) => {
     const likeButtonElements = document.querySelectorAll(".like-button");
