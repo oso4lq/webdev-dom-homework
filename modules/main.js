@@ -48,7 +48,6 @@ export const loadPage = () => {
 
         })
         .catch((error) => {
-            //alert("Кажется, у вас сломался интернет");
             console.error(error);
         });
 };
@@ -103,6 +102,7 @@ const renderComments = (commentsArray) => {
 
     appElement.innerHTML = appHTML;
 
+    // unnecessary because the user is not logged in
     //initiateLikeButtonListeners(commentsArray);
     //initiateReplyListeners(commentsArray);
     //initiateEditSaveListeners(commentsArray);
@@ -179,64 +179,6 @@ function renderLogin() {
             })
     };
 };
-
-const initiateLikeButtonListeners = (commentsArray) => {
-    const likeButtonElements = document.querySelectorAll(".like-button");
-
-    for (const likeButtonElement of likeButtonElements) {
-        likeButtonElement.addEventListener("click", (event) => {
-            event.stopPropagation();
-
-            const index = likeButtonElement.dataset.index;
-
-            if (commentsArray[index].isLiked) {
-                //console.log('element unliked');
-                commentsArray[index].likes--;
-                commentsArray[index].isLiked = false;
-            } else {
-                //console.log('element liked');
-                commentsArray[index].likes++;
-                commentsArray[index].isLiked = true;
-            }
-
-            renderComments(commentsArray);
-        });
-    }
-};
-
-const initiateReplyListeners = (commentsArray) => {
-    const commentBoxElements = document.querySelectorAll(".comment");
-
-    for (const commentBoxElement of commentBoxElements) {
-        commentBoxElement.addEventListener("click", () => {
-            const index = commentBoxElement.dataset.index;
-            textInputElement.value = `> ${commentsArray[index].text} \n ${commentsArray[index].author}, `;
-            //console.log('commentBoxElement clicked');
-        })
-    };
-};
-
-const initiateEditSaveListeners = (commentsArray) => {
-    const buttons = document.querySelectorAll(".edit-btn, .save-btn");
-
-    buttons.forEach((button, index) => {
-        button.addEventListener("click", (event) => {
-            event.stopPropagation();
-            if (button.classList.contains("edit-btn")) {
-                commentsArray[index].isEdit = true;
-                //console.log('comment editing');
-            } else if (button.classList.contains("save-btn")) {
-                const index = button.dataset.index;
-                const textarea = document.getElementById(`textarea-${index}`);
-                commentsArray[index].text = textarea.value;
-                commentsArray[index].isEdit = false;
-                //console.log('comment saved');
-            }
-            renderComments(commentsArray);
-        });
-    });
-};
-
 
 
 

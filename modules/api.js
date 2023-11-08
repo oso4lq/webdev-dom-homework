@@ -12,8 +12,6 @@ const commentWaitElement = document.getElementById("comment-wait");
 const commentUploadElement = document.getElementById("comment-upload");
 
 const errorBoxElement = document.getElementById("error-box");
-//const errorBoxElement = document.getElementById("error-no-network");
-//const errorBoxElement = document.getElementById("error-server-down");
 
 const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
 const userURL = "https://wedev-api.sky.pro/api/user/login";
@@ -38,6 +36,7 @@ export function setUserId(newId) {
     id = newId;
 };
 
+// fetch POST login to API
 const login = (userLogin, userPassword) => {
     return fetch(userURL, {
         method: "POST",
@@ -56,7 +55,7 @@ const login = (userLogin, userPassword) => {
     })
 }
 
-// fetch GET from API
+// fetch GET comments from API
 export const getComments = () => {
     return fetch(commentsURL, {
         method: "GET",
@@ -72,7 +71,6 @@ export const getComments = () => {
             return response;
         })
         .then((responseData) => {
-
 
             commentsArray = responseData.comments.map((comment) => {
                 return {
@@ -95,7 +93,7 @@ export const getComments = () => {
 
 const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 
-// post a comment fetch and logic
+// fetch POST a comment and logic
 const retryPostComment = () => {
     
     const nameInputElement = document.getElementById("comment-name-input");
@@ -187,7 +185,7 @@ const retryPostComment = () => {
     };
 };
 
-// add to array and render function
+// add new comment to array and render function
 export const renderComments = () => {
 
     const appElement = document.querySelector("#app");
@@ -306,17 +304,6 @@ export const renderComments = () => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 //  OLD
 const getCommentsAPICore = () => {
     return fetch(commentsURL, {
@@ -334,110 +321,3 @@ const getCommentsAPICore = () => {
 }
 
 export { getCommentsAPICore, retryPostComment, login }
-
-/*
-// sample function for retry/post comments
-const addComment = (name, text) => {
-    return fetch(commentsURL, {
-        method: "POST",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-            text: text
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;"),
-            name: name
-                .replaceAll("&", "&amp;")
-                .replaceAll("<", "&lt;")
-                .replaceAll(">", "&gt;")
-                .replaceAll('"', "&quot;"),
-            forceError: true,
-        }),
-    });
-};
-
-// Метод fetch() запрос через API на добавление данных c сохранением на сервере комментарий в списке
-const sedingsServer = () => {
-    const formElements = document.getElementById("add-form");
-    const inputName = document.getElementById("comment-name-input");
-    const inputComments = document.getElementById("comment-text-input");
-    const loadingElements = document.querySelector(".loading-add");
-    loadingElements.style.display = "block";
-    formElements.style.display = "none";
-
-    // Функция addComment отдельно для передачи POST запроса
-    addComment(inputName.value, inputComments.value)
-        .then((response) => {
-            return response;
-        })
-        // Создан отдельный then для реализации логики if/else и передачи исключений методом throw new Error() отлавливаем ошибки в catch()
-        .then((responseData) => {
-            if (responseData.status === 201) {
-                return responseData.json();
-            } else if (responseData.status === 400) {
-                throw new Error("Не верный ввод");
-            } else if (responseData.status === 500) {
-                console.log(responseData.status);
-                throw new Error("Сломался сервер");
-            } else {
-                throw new Error("Не работает интернет");
-            }
-        })
-        .then(() => {
-            return getComments(); // Вызов повторно метод GET в методе POST для того что бы добавлялся комментарий
-        })
-        .then(() => {
-            button.disabled = true;
-            inputName.value = "";
-            inputComments.value = "";
-            loadingElements.style.display = "none";
-            formElements.style.display = "flex";
-        })
-        .catch((error) => {
-            loadingElements.style.display = "none";
-            formElements.style.display = "flex";
-            if (error.message === "Не верный ввод") {
-                alert("Имя и комментарий должны быть не короче 3 символов");
-            } else if (error.message === "Сломался сервер") {
-                addCommentError();
-            }
-        });
-};
-
-// Функция повторного отправления запроса при 500 ошибки API
-function addCommentError() {
-    addComment(inputName.value, inputComments.value)
-        .then((response) => {
-            return response;
-        }) // Создан отдельный then для реализации логики if/else и передачи исключений методом throw new Error() отлавливаем ошибки в catch()
-        .then((responseData) => {
-            console.log(responseData);
-            if (responseData.status === 500) {
-                throw new Error("Сломался сервер");
-            } else {
-                return responseData.json();
-            }
-        })
-        .then(() => {
-            return getComments();
-        })
-        .then(() => {
-            button.disabled = true;
-            inputName.value = "";
-            inputComments.value = "";
-            loadingElements.style.display = "none";
-            formElements.style.display = "flex";
-        })
-        .catch((error) => {
-            alert(
-                "Кажется, что на сервере проблемы делаем повторный запрос!!!!!!!!!"
-            );
-            loadingElements.style.display = "block";
-            formElements.style.display = "none";
-            addCommentError();
-        });
-}
-*/

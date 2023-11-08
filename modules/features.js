@@ -33,12 +33,10 @@ const initiateLikeButtonListeners = () => {
 
 const initiateReplyListeners = () => {
     const commentBoxElements = document.querySelectorAll(".comment");
+    const textInputElement = document.getElementById("comment-text-input");
 
     for (const commentBoxElement of commentBoxElements) {
-        const textInputElement = document.getElementById("comment-text-input");
-
         commentBoxElement.addEventListener("click", () => {
-
             const index = commentBoxElement.dataset.index;
             textInputElement.value = `> ${commentsArray[index].text} \n ${commentsArray[index].author}, `;
             //console.log('commentBoxElement clicked');
