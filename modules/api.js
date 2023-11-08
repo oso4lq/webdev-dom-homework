@@ -100,6 +100,7 @@ const retryPostComment = () => {
     
     const nameInputElement = document.getElementById("comment-name-input");
     const textInputElement = document.getElementById("comment-text-input");
+    const buttonElement = document.getElementById("comment-button");
 
     fetch(commentsURL, {
         method: "POST",
@@ -114,7 +115,7 @@ const retryPostComment = () => {
         },
     })
         .then(postResponceAnalysis)
-        .then(() => getCommentsAPI())
+        .then(() => getComments())
         .then(() => {
             buttonElement.disabled = false;
             buttonElement.textContent = 'Написать';
