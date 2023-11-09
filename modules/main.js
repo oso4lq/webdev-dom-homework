@@ -16,7 +16,6 @@ const commentWaitElement = document.getElementById("comment-wait");
 commentWaitElement.style.display = "block";
 
 
-
 export const now = new Date();
 const URL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
 
@@ -80,11 +79,10 @@ const renderComments = (commentsArray) => {
                     </div>
 
                     <div class="comment-footer">
-                    
                         <div class="likes">
                             <span class="likes-counter">${comment.likes}</span>
                             <button data-index="${index}" class="like-button ${comment.isLiked ? '-active-like' : ''}"></button>
-                        </div>
+                    </div>
                 
                     ${editButtonHtml}
                 </li>`;

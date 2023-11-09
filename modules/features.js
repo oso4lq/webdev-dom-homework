@@ -2,8 +2,8 @@
 
 import { commentsArray, renderComments } from "./api.js";
 
-const nameInputElement = document.getElementById("comment-name-input");
-const textInputElement = document.getElementById("comment-text-input");
+//const nameInputElement = document.getElementById("comment-name-input");
+//const textInputElement = document.getElementById("comment-text-input");
 
 const initiateLikeButtonListeners = () => {
     const likeButtonElements = document.querySelectorAll(".like-button");
@@ -37,7 +37,9 @@ const initiateReplyListeners = () => {
 
     for (const commentBoxElement of commentBoxElements) {
         commentBoxElement.addEventListener("click", () => {
-            const index = commentBoxElement.dataset.index;
+            console.log(commentBoxElement);
+            const index = commentBoxElement.dataset.delete;
+            console.log(index);
             textInputElement.value = `> ${commentsArray[index].text} \n ${commentsArray[index].author}, `;
             //console.log('commentBoxElement clicked');
         })
@@ -69,6 +71,7 @@ const validationButton = () => {
     const nameInputElement = document.getElementById("comment-name-input");
     const textInputElement = document.getElementById("comment-text-input");
     const buttonElement = document.getElementById("comment-button");
+
     if (nameInputElement.value && textInputElement.value) {
         buttonElement.classList.remove("add-form-button-inactive-hover");
         buttonElement.disabled = false;
