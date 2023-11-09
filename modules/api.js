@@ -10,7 +10,7 @@ const buttonElement = document.getElementById("comment-button");
 
 const commentUploadElement = document.getElementById("comment-upload");
 
-//const commentWaitElement = document.getElementById("comment-wait");
+const commentWaitElement = document.getElementById("comment-wait");
 //const errorBoxElement = document.getElementById("error-box");
 
 const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
@@ -57,7 +57,7 @@ const login = (userLogin, userPassword) => {
 
 // fetch GET comments from API
 export const getComments = () => {
-    const commentWaitElement = document.getElementById("comment-wait");
+    //const commentWaitElement = document.getElementById("comment-wait");
     return fetch(commentsURL, {
         method: "GET",
         headers: {
