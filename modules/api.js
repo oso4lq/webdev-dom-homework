@@ -8,10 +8,10 @@ const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
 const buttonElement = document.getElementById("comment-button");
 
-const commentWaitElement = document.getElementById("comment-wait");
 const commentUploadElement = document.getElementById("comment-upload");
 
-const errorBoxElement = document.getElementById("error-box");
+//const commentWaitElement = document.getElementById("comment-wait");
+//const errorBoxElement = document.getElementById("error-box");
 
 const commentsURL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
 const userURL = "https://wedev-api.sky.pro/api/user/login";
@@ -57,6 +57,7 @@ const login = (userLogin, userPassword) => {
 
 // fetch GET comments from API
 export const getComments = () => {
+    const commentWaitElement = document.getElementById("comment-wait");
     return fetch(commentsURL, {
         method: "GET",
         headers: {
@@ -95,7 +96,7 @@ const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '
 
 // fetch POST a comment and logic
 const retryPostComment = () => {
-    
+
     const nameInputElement = document.getElementById("comment-name-input");
     const textInputElement = document.getElementById("comment-text-input");
     const buttonElement = document.getElementById("comment-button");
@@ -122,12 +123,15 @@ const retryPostComment = () => {
         })
         .catch(postErrorAnalysis);
 
+    const errorBoxElement = document.getElementById("error-box");
+
     function postResponceAnalysis(response) {
         switch (true) {
             case nameInputElement.value.length < 3 || textInputElement.value.length < 3:
-                
+                console.log('Field inputs must be at least 3 characters long');
                 errorBoxElement.innerHTML = 'Поля ввода должны содержать минимум 3 символа.';
                 errorBoxElement.style.display = 'flex';
+
                 setTimeout(() => {
                     errorBoxElement.style.display = 'none';
                 }, 5000);
@@ -149,10 +153,12 @@ const retryPostComment = () => {
         if (error instanceof Error) {
             switch (error.message) {
                 case "Failed to fetch":
+                    console.log('Failed to fetch');
                     errorBoxElement.style.display = 'flex';
                     errorBoxElement.innerHTML = 'Соединение с Интернетом потеряно.<br>Повторная попытка через 5 секунд.';
                     break;
                 case "Server is down":
+                    console.log('Server is down');
                     errorBoxElement.style.display = 'flex';
                     errorBoxElement.innerHTML = 'Соединение с сервером потеряно.<br>Повторная попытка через 5 секунд.';
                     break;
