@@ -203,6 +203,7 @@ const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '
 nameInputElement.addEventListener("input", validationFields);
 textInputElement.addEventListener("input", validationFields);
 
+
 buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
 

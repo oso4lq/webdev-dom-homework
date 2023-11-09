@@ -125,8 +125,9 @@ const retryPostComment = () => {
     function postResponceAnalysis(response) {
         switch (true) {
             case nameInputElement.value.length < 3 || textInputElement.value.length < 3:
-                errorBoxElement.style.display = 'flex';
+                
                 errorBoxElement.innerHTML = 'Поля ввода должны содержать минимум 3 символа.';
+                errorBoxElement.style.display = 'flex';
                 setTimeout(() => {
                     errorBoxElement.style.display = 'none';
                 }, 5000);
@@ -246,10 +247,10 @@ export const renderComments = () => {
                 class="add-form-text"
                 id="comment-text-input"
                 placeholder="Введите ваш коментарий"
-                rows="4">
-            </textarea>
+                rows="4"></textarea>
 
             <div class="add-form-row">
+                <div class="error-box" id="error-box" style="display: none;"></div>
                 <button class="add-form-button-active" id="comment-button">Написать</button>
             </div>
             
@@ -262,8 +263,6 @@ export const renderComments = () => {
     initiateEditSaveListeners();
 
     inputByEnter();
-
-    validationButton();
 
     const buttonElement = document.getElementById("comment-button");
 
