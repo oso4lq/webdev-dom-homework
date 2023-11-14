@@ -2,6 +2,7 @@
 
 import { getNetworkDate } from './getDate.js';
 import { getCommentsAPICore } from './api.js';
+import { renderLogin } from './renderLogin.js';
 
 const listElement = document.getElementById("comments");
 const nameInputElement = document.getElementById("comment-name-input");
@@ -11,11 +12,16 @@ const commentWaitElement = document.getElementById("comment-wait");
 const errorShortInputElement = document.getElementById("error-short-input");
 const errorNoNetworkElement = document.getElementById("error-no-network");
 const errorServerDownElement = document.getElementById("error-server-down");
+const appElement = document.getElementById("app");
+
 
 let comments = [];
 
 const renderComments = () => {
-    listElement.innerHTML = comments.map((comment, index) => {
+    //before
+    //listElement.innerHTML 
+    //after
+    const commentsHTML = comments.map((comment, index) => {
         const quoteText = comment.text.replace(/&gt; /g, '<div class="quote">').replace(/, /g, '</div><br>');
 
         const editButtonHtml = comment.isEdit
@@ -45,9 +51,36 @@ const renderComments = () => {
             </li>`;
     }).join("");
 
+    const appHTML = `
+    <div class="container">
+<ul id="comments" class="comments">${commentsHTML}
+</ul>
+<div class="add-form">
+  <input type="text" class="add-form-name" id="comment-name-input" placeholder="Введите ваше имя" />
+  <textarea type="textarea" class="add-form-text" id="comment-text-input" placeholder="Введите ваш коментарий"
+    rows="4"></textarea>
+  <div id="button-box" class="add-form-row">
+
+    <div class="error-box" id="error-short-input">Поля ввода должны содержать минимум 3 символа.</div>
+    <div class="error-box" id="error-no-network">Соединение с Интернетом потеряно.<br>Повторная попытка через 5
+      секунд.</div>
+    <div class="error-box" id="error-server-down">Соединение с сервером потеряно.<br>Повторная попытка через 5
+      секунд.</div>
+
+    <button class="add-form-button-active" id="comment-button">Написать</button>
+  </div>
+</div>
+<a href="login.html" id="link-to-login">Войти / Зарегистрироваться</a>
+<div id="app"></div>
+</div>
+`;
+
+    appElement.innerHTML = appHTML;
+
     initiateLikeButtonListeners();
     initiateReplyListeners();
     initiateEditSaveListeners();
+
 };
 
 const initiateLikeButtonListeners = () => {
@@ -107,11 +140,6 @@ const initiateEditSaveListeners = () => {
     });
 };
 
-/*const getCommentsAPI = () => {
-    return fetch("https://wedev-api.sky.pro/api/v1/oso4/comments", {
-        method: "GET",
-    })
-        .then((response) => response.json())*/
 const getCommentsAPI = () => {
     return getCommentsAPICore().then((responseData) => {
         comments = responseData.comments.map((comment) => {
@@ -138,9 +166,10 @@ const loadingText = () => {
             document.getElementById("comment-wait").style.display = 'none';
         });
 };
-loadingText();
+//loadingText();
+getCommentsAPI();
 
-
+renderLogin();
 
 
 
@@ -173,6 +202,7 @@ const sanitizeInput = (input) => input.replaceAll('<', '&lt;').replaceAll('>', '
 
 nameInputElement.addEventListener("input", validationFields);
 textInputElement.addEventListener("input", validationFields);
+
 
 buttonElement.addEventListener("click", () => {
     if (nameInputElement.value !== "" && textInputElement.value !== "") {
@@ -234,19 +264,24 @@ buttonElement.addEventListener("click", () => {
                     buttonElement.disabled = true;
                     buttonElement.textContent = 'Добавление...';
 
-                    setTimeout(() => {
-                        retryPostComment();
-                        switch (error.message) {
-                            case "Failed to fetch":
-                                errorNoNetworkElement.style.display = 'none';
-                                break;
-                            case "Server is down":
-                                errorServerDownElement.style.display = 'none';
-                                break;
-                            default:
-                                break;
-                        }
-                    }, 5000);
+                    if (error.message !== "Field inputs must be at least 3 characters long") {
+                        setTimeout(() => {
+                            retryPostComment();
+                            switch (error.message) {
+                                case "Failed to fetch":
+                                    errorNoNetworkElement.style.display = 'none';
+                                    break;
+                                case "Server is down":
+                                    errorServerDownElement.style.display = 'none';
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }, 5000);
+                    } else {
+                        buttonElement.disabled = false;
+                        buttonElement.textContent = 'Написать';
+                    }
                 }
                 return error;
             };

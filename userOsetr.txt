@@ -1,0 +1,10 @@
+{
+	"user": {
+		"login": "osetr",
+		"password": "abirvalg",
+		"name": "Authorized Osetr",
+		"imageUrl": "https://storage.yandexcloud.net/skypro-webdev-homework-bucket/1680591910917-%25C3%2590%25C2%25A1%25C3%2590%25C2%25BD%25C3%2590%25C2%25B8%25C3%2590%25C2%25BC%25C3%2590%25C2%25BE%25C3%2590%25C2%25BA%2520%25C3%2591%25C2%258D%25C3%2590%25C2%25BA%25C3%2591%25C2%2580%25C3%2590%25C2%25B0%25C3%2590%25C2%25BD%25C3%2590%25C2%25B0%25202023-04-04%2520%25C3%2590%25C2%25B2%252014.04.40.png",
+		"token": "cccsb8cwco6gasawbocod4asc0bg6g78d0cwbkcccobodkb8b43k8scsb8cwco",
+		"_id": "654a1a39539c005d101cb98d"
+	}
+}

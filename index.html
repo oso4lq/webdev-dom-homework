@@ -9,21 +9,32 @@
 
 <body>
   <div class="container">
-    <div class="comment-wait" id="comment-wait">Комментарии загружаются. Пожалуйста, подождите.</div>
-    <ul id="comments" class="comments">
-      <!--Comments are stored in index.js-->
+    <!--
+      <ul id="comments" class="comments">
     </ul>
     <div class="add-form">
       <input type="text" class="add-form-name" id="comment-name-input" placeholder="Введите ваше имя" />
       <textarea type="textarea" class="add-form-text" id="comment-text-input" placeholder="Введите ваш коментарий"
         rows="4"></textarea>
       <div id="button-box" class="add-form-row">
-        <!--error divs-->
+
         <div class="error-box" id="error-short-input">Поля ввода должны содержать минимум 3 символа.</div>
-        <div class="error-box" id="error-no-network">Соединение с Интернетом потеряно.<br>Повторная попытка через 5 секунд.</div>
-        <div class="error-box" id="error-server-down">Соединение с сервером потеряно.<br>Повторная попытка через 5 секунд.</div>
+        <div class="error-box" id="error-no-network">Соединение с Интернетом потеряно.<br>Повторная попытка через 5
+          секунд.</div>
+        <div class="error-box" id="error-server-down">Соединение с сервером потеряно.<br>Повторная попытка через 5
+          секунд.</div>
+
         <button class="add-form-button-active" id="comment-button">Написать</button>
       </div>
+    </div>
+    <a href="login.html" id="link-to-login">Войти / Зарегистрироваться</a>
+  -->
+    <div id="app">
+        <div class="comment-wait" id="comment-wait">
+        Комментарии загружаются. Пожалуйста, подождите.</div>
+        <div class="comment-upload" id="comment-upload" style="display: none; color: rgb(255, 255, 255)">
+        Комментарий добавляется</div>
+        <div class="error-box" id="error-box" style="display: none;"></div>
     </div>
   </div>
 </body>
@@ -31,8 +42,3 @@
 <script type="module" src="modules/main.js"></script>
 
 </html>
-
-
-
-<!--
-  -->

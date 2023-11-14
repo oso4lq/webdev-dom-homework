@@ -1,3 +1,5 @@
+//  Script for messaging the user about the loading comments
+
 import { getCommentsAPI } from './main.js';
 
 export const loadingText = () => {
