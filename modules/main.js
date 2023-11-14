@@ -1,12 +1,8 @@
 "use strict";
 
-import { getNetworkDate } from './getDate.js';
 import { login, setUserToken, setUserName, setUserId, getComments } from './api.js';
-/*import { getCommentsAPICore, retryPostComment } from './api.js';
-import { renderComments } from './renderComments.js';
-import { validationFields } from './validationFields.js';
-import { loadingText } from './loadingText.js';
-import { renderLogin } from "./renderLogin.js";*/
+//import { getNetworkDate } from './getDate.js';
+import { format } from 'date-fns';
 
 const nameInputElement = document.getElementById("comment-name-input");
 const textInputElement = document.getElementById("comment-text-input");
@@ -14,7 +10,6 @@ const buttonElement = document.getElementById("comment-button");
 
 const commentWaitElement = document.getElementById("comment-wait");
 commentWaitElement.style.display = "block";
-
 
 export const now = new Date();
 const URL = "https://wedev-api.sky.pro/api/v2/oso4/comments";
@@ -34,7 +29,8 @@ export const loadPage = () => {
             const comments = responseData.comments.map((comment) => {
                 return {
                     author: comment.author.name,
-                    date: getNetworkDate(comment.date),
+                    date: format(new Date(comment.date), "yyyy-MM-dd hh:mm:ss"),
+                    //date: getNetworkDate(comment.date),
                     text: comment.text,
                     likes: comment.likes,
                     isLiked: false,
@@ -85,6 +81,7 @@ const renderComments = (commentsArray) => {
                     </div>
                 
                     ${editButtonHtml}
+
                 </li>`;
         }).join("");
 
@@ -101,10 +98,10 @@ const renderComments = (commentsArray) => {
 
     appElement.innerHTML = appHTML;
 
-    // unnecessary because the user is not logged in
-    //initiateLikeButtonListeners(commentsArray);
-    //initiateReplyListeners(commentsArray);
-    //initiateEditSaveListeners(commentsArray);
+    /*unnecessary because the user is not logged in
+    initiateLikeButtonListeners(commentsArray);
+    initiateReplyListeners(commentsArray);
+    initiateEditSaveListeners(commentsArray);*/
 
     document.getElementById('link').addEventListener('click', () => {
         renderLogin()
@@ -149,7 +146,6 @@ function renderLogin() {
     </div>`;
 
     appElement.innerHTML = loginHTML;
-    //console.log(appElement.innerHTML);
 
     document.querySelector("#linkBack").addEventListener("click", () => {
         loadPage()
@@ -178,61 +174,3 @@ function renderLogin() {
             })
     };
 };
-
-
-
-
-
-
-// OLD
-/*
-let comments = [];
-
-    export const getCommentsAPI = () => {
-        return getCommentsAPICore().then((responseData) => {
-            comments = responseData.comments.map((comment) => {
-                return {
-                    author: comment.author.name,
-                    date: getNetworkDate(comment.date),
-                    likes: comment.likes,
-                    isLiked: false,
-                    text: comment.text,
-                };
-            });
-            renderComments(comments);
-        });
-    }
-    
-    const loadingText = () => {
-        document.getElementById("comments").style.display = 'none';
-        document.getElementById("comment-wait").style.display = 'block';
-        getCommentsAPI()
-            .then(() => {
-                document.getElementById("comments").style.display = 'flex';
-                document.getElementById("comment-wait").style.display = 'none';
-            });
-    };
-
-
-    // later add loadingText once again, now it's switched off and replaced with
-    // simple loading comments
-
-    loadingText();
-    //getCommentsAPI();
-    renderLogin();
-
-
-    
-    validationFields();
-    nameInputElement.classList.remove("error");
-    textInputElement.classList.remove("error");
-    nameInputElement.addEventListener("input", validationFields);
-    textInputElement.addEventListener("input", validationFields);
-    
-
-    buttonElement.addEventListener("click", () => {
-        buttonElement.disabled = true;
-        buttonElement.textContent = 'Добавление...';
-        retryPostComment();
-    });
-    */
