@@ -1,6 +1,5 @@
 //  API operations
-//
-//import { getCommentsAPI } from './main.js';
+
 import { initiateLikeButtonListeners, initiateReplyListeners, initiateEditSaveListeners, validationButton, inputByEnter } from "./features.js";
 import { getNetworkDate } from "./getDate.js";
 
@@ -298,31 +297,4 @@ export const renderComments = () => {
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-//  OLD
-const getCommentsAPICore = () => {
-    return fetch(commentsURL, {
-        method: "GET",
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    })
-        .then((response) => {
-            if (response.status === 401) {
-                throw new Error("No authorization");
-            }
-            return response.json()
-        });
-}
-
-export { getCommentsAPICore, retryPostComment, login }
+export { retryPostComment, login }
